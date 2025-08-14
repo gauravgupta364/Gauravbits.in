@@ -1,34 +1,40 @@
 import React from "react";
 import { motion } from "framer-motion";
+import m1 from "../assets/m1.PNG";
+import m2 from "../assets/m2.PNG";
+import w1 from "../assets/w1.PNG";
+import w2 from "../assets/w2.PNG";
+
+
 
 const testimonials = [
   {
-    name: "Aarav Mehta",
-    role: "Product Manager at TechSphere",
+    name: "Yash Sahu",
+    role: "Software Engineer at HCL Technologies",
     review:
       "Gaurav is a visionary developer. His attention to detail and creativity blew us away. Our project was a massive success because of him.",
-    image: "https://via.placeholder.com/80",
+    image: m1
   },
   {
-    name: "Sanya Kapoor",
+    name: "Heather Forster",
     role: "UI/UX Designer at PixelWorks",
     review:
       "Working with Gaurav was an absolute pleasure. He brings design and code together like magic. Highly recommend him!",
-    image: "https://via.placeholder.com/80",
+    image: w1,
   },
   {
-    name: "Rohit Sharma",
-    role: "CEO at CodeEmpire",
+    name: "Amy jacobsan",
+    role: "Tech Manager at CodeEmpire",
     review:
       "From concept to execution, Gaurav handled everything flawlessly. His work ethic and innovation are unmatched.",
-    image: "https://via.placeholder.com/80",
+    image: m2,
   },
   {
-    name: "Priya Nair",
+    name: "Carry Smith",
     role: "CTO at Innovate Labs",
     review:
       "Gaurav transformed our outdated platform into something modern and powerful. His skills are world-class.",
-    image: "https://via.placeholder.com/80",
+    image: w2,
   },
 ];
 
@@ -69,6 +75,7 @@ const Testimonials = () => {
             <h3 className="text-lg font-semibold">{testi.name}</h3>
             <p className="text-sm text-gray-400">{testi.role}</p>
           </motion.div>
+          
         ))}
       </div>
     </section>
