@@ -57,3 +57,11 @@
 .floating-card {
   animation: floating 4s ease-in-out infinite;
 }
+
+
+
+@media (max-width: 640px) {
+  body > *:not(#contact):not(footer) {
+    overflow-x: clip;
+  }
+}

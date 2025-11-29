@@ -1,73 +1,80 @@
-// src/components/IntroAnimation.jsx
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState, useRef } from "react";
+import gsap from "gsap";
+import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+
+gsap.registerPlugin(MorphSVGPlugin);
 
 export default function IntroAnimation({ onFinish }) {
   const greetings = [
     "Hello", "नमस्ते", "Hola", "Bonjour",
-    "Ciao",  "Olá", "Здравствуйте",
+    "Ciao", "Olá", "Здравствуйте",
     "Merhaba", "Γειά", "Hej", "Hallo", "Salam"
   ];
 
   const [index, setIndex] = useState(0);
-  const [visible, setVisible] = useState(true);
+  const overlayRef = useRef(null);
+  const greetingRef = useRef(null);
 
   useEffect(() => {
-    // cycle greetings quickly
+    let greetingTimer;
+
     if (index < greetings.length - 1) {
-      const id = setInterval(() => setIndex((i) => i + 1), 180); // faster switch
-      return () => clearInterval(id);
+      gsap.fromTo(
+        greetingRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.12 }
+      );
+      greetingTimer = setTimeout(() => setIndex(i => i + 1), 180);
     } else {
-      // when last greeting shown, hide overlay (triggers exit animation)
-      const t = setTimeout(() => setVisible(false), 300);
-      return () => clearTimeout(t);
+      gsap.fromTo(
+        greetingRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.12 }
+      );
+
+      greetingTimer = setTimeout(() => {
+        const tl = gsap.timeline({
+          onComplete: () => onFinish && onFinish(),
+        });
+
+        tl.to([overlayRef.current, greetingRef.current], {
+          duration: 1.8,
+          y: "-100vh",
+          ease: "power4.inOut",
+        }).to(
+          overlayRef.current.querySelector("path"),
+          {
+            duration: 1.8,
+            morphSVG: "M0,0 L0,300 Q720,900 1440,300 L1440,0 Z",
+            ease: "power4.inOut",
+          },
+          "<"
+        );
+      }, 300);
     }
-  }, [index]);
+
+    return () => clearTimeout(greetingTimer);
+  }, [index, onFinish]);
 
   return (
-    <AnimatePresence onExitComplete={onFinish}>
-      {visible && (
-        <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black text-white overflow-hidden"
-          initial={{ y: 0 }}
-          exit={{
-            y: "-110%", // slide the whole overlay up and out
-            transition: {
-              duration: 1.05,
-              ease: [0.22, 1, 0.36, 1], // smooth, slightly rubbery curve
-            },
-          }}
-        >
-          {/* greeting text */}
-          <motion.h1
-            key={index}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.12 }}
-          >
-            {greetings[index]}
-          </motion.h1>
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-[9999] flex items-center justify-center text-white overflow-hidden pointer-events-none"
+    >
+      <h1
+        ref={greetingRef}
+        className="text-5xl md:text-7xl lg:text-8xl font-bold absolute z-20"
+      >
+        {greetings[index]}
+      </h1>
 
-          {/* SVG curve pinned to bottom — defines the curved bottom edge */}
-          <svg
-            className="absolute left-0 bottom-0 w-full h-36 md:h-48 lg:h-64"
-            viewBox="0 0 1440 320"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            {/* 
-              Path creates a smooth convex curve — fill matches overlay (black). 
-              You can tweak the control points to change curve shape.
-            */}
-            <path
-              fill="#000"
-              d="M0,128 C160,200 1280,200 1440,128 L1440,320 L0,320 Z"
-            />
-          </svg>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <svg
+        className="absolute inset-0 w-full h-full"
+        viewBox="0 0 1440 900"
+        preserveAspectRatio="none"
+      >
+        <path fill="black" d="M0,0 L0,900 L1440,900 L1440,0 Z" />
+      </svg>
+    </div>
   );
 }
