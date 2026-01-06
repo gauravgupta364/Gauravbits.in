@@ -1,4 +1,4 @@
-// src/sections/Home.jsx
+
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import avatar from "../assets/avator.png";
